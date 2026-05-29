@@ -63,6 +63,24 @@ void test_csv_has_header () {
     assert (result.has_prefix ("\"Project\",\"Section\",\"Task\""));
 }
 
+void test_markdown_unchecked () {
+    var rows = make_rows ("Work", "", "Buy milk", false);
+    string result = new Services.Export.MarkdownFormatter ().format (rows);
+    assert (result.contains ("- [ ] Buy milk"));
+}
+
+void test_markdown_checked () {
+    var rows = make_rows ("Work", "", "Done task", true);
+    string result = new Services.Export.MarkdownFormatter ().format (rows);
+    assert (result.contains ("- [x] Done task"));
+}
+
+void test_markdown_section_heading () {
+    var rows = make_rows ("Work", "Inbox", "Buy milk", false);
+    string result = new Services.Export.MarkdownFormatter ().format (rows);
+    assert (result.contains ("### Inbox"));
+}
+
 int main (string[] args) {
     Test.init (ref args);
     Test.add_func ("/export/csv/quote-plain",    test_csv_quote_plain);
@@ -71,5 +89,8 @@ int main (string[] args) {
     Test.add_func ("/export/csv/priority-none",  test_csv_priority_label_none);
     Test.add_func ("/export/csv/row",            test_csv_row);
     Test.add_func ("/export/csv/header",         test_csv_has_header);
+    Test.add_func ("/export/md/unchecked",        test_markdown_unchecked);
+    Test.add_func ("/export/md/checked",          test_markdown_checked);
+    Test.add_func ("/export/md/section-heading",  test_markdown_section_heading);
     return Test.run ();
 }
