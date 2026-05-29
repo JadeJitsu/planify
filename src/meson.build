@@ -101,6 +101,7 @@ sources = files(
   'Dialogs/Section.vala',
   'Dialogs/Label.vala',
   'Dialogs/QuickAdd.vala',
+  'Dialogs/ExportDialog.vala',
   'Dialogs/ManageSectionOrder.vala',
   'Dialogs/ProjectPicker.vala',
   'Dialogs/ManageProjects.vala',

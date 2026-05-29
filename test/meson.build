@@ -24,3 +24,16 @@ test_cli = executable(
 )
 
 test('cli', test_cli, timeout: 30, suite: ['cli'])
+
+test_export_sources = [
+    'test-export.vala',
+]
+
+test_export = executable(
+    'test-export',
+    test_export_sources,
+    dependencies: [ core_dep, glib_dep ],
+    install: false
+)
+
+test('export', test_export, timeout: 30, suite: ['export'])

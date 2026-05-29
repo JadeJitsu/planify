@@ -18,6 +18,12 @@ core_files = files(
     'Services/Todoist/TodoistItems.vala',
     'Services/Todoist/TodoistProjects.vala',
     'Services/BackupExporter.vala',
+    'Services/Export/CsvFormatter.vala',
+    'Services/Export/MarkdownFormatter.vala',
+    'Services/Export/OmniTaskPaperFormatter.vala',
+    'Services/Export/OmniOpmlFormatter.vala',
+    'Services/Export/OmniCsvFormatter.vala',
+    'Services/Export/OdsFormatter.vala',
     'Services/ColorSchemeSettings.vala',
 
     'Services/CalDAV/Core.vala',
