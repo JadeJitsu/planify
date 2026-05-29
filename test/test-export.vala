@@ -63,6 +63,19 @@ void test_csv_has_header () {
     assert (result.has_prefix ("\"Project\",\"Section\",\"Task\""));
 }
 
+void test_taskpaper_task_line () {
+    var rows = make_rows ("Work", "Inbox", "Buy milk", false);
+    string result = new Services.Export.OmniTaskPaperFormatter ().format (rows);
+    assert (result.contains ("- Buy milk"));
+    assert (result.contains ("@context(Inbox)"));
+}
+
+void test_taskpaper_done_tag () {
+    var rows = make_rows ("Work", "", "Done task", true);
+    string result = new Services.Export.OmniTaskPaperFormatter ().format (rows);
+    assert (result.contains ("@done("));
+}
+
 void test_markdown_unchecked () {
     var rows = make_rows ("Work", "", "Buy milk", false);
     string result = new Services.Export.MarkdownFormatter ().format (rows);
@@ -92,5 +105,7 @@ int main (string[] args) {
     Test.add_func ("/export/md/unchecked",        test_markdown_unchecked);
     Test.add_func ("/export/md/checked",          test_markdown_checked);
     Test.add_func ("/export/md/section-heading",  test_markdown_section_heading);
+    Test.add_func ("/export/taskpaper/task", test_taskpaper_task_line);
+    Test.add_func ("/export/taskpaper/done", test_taskpaper_done_tag);
     return Test.run ();
 }
