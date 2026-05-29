@@ -63,6 +63,13 @@ void test_csv_has_header () {
     assert (result.has_prefix ("\"Project\",\"Section\",\"Task\""));
 }
 
+void test_ods_content_xml_has_header () {
+    var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
+    string xml = new Services.Export.OdsFormatter ().build_content_xml_for_test (rows);
+    assert (xml.contains ("Project"));
+    assert (xml.contains ("table:table-row"));
+}
+
 void test_omni_csv_header () {
     var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
     string result = new Services.Export.OmniCsvFormatter ().format (rows);
@@ -173,5 +180,6 @@ int main (string[] args) {
     Test.add_func ("/export/omni-csv/header",      test_omni_csv_header);
     Test.add_func ("/export/omni-csv/flagged-p1",  test_omni_csv_flagged_p1);
     Test.add_func ("/export/omni-csv/not-flagged", test_omni_csv_not_flagged_p4);
+    Test.add_func ("/export/ods/content-xml", test_ods_content_xml_has_header);
     return Test.run ();
 }
