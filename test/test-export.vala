@@ -63,6 +63,45 @@ void test_csv_has_header () {
     assert (result.has_prefix ("\"Project\",\"Section\",\"Task\""));
 }
 
+void test_omni_csv_header () {
+    var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
+    string result = new Services.Export.OmniCsvFormatter ().format (rows);
+    assert (result.has_prefix ("\"Task Name\",\"Project\""));
+}
+
+void test_omni_csv_flagged_p1 () {
+    var item = new Objects.Item ();
+    item.content = "Urgent";
+    item.checked = false;
+    item.priority = Constants.PRIORITY_1;
+    item.description = "";
+
+    var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
+    rows.add (Services.Export.ExportRow () {
+        project_name = "Work", section_name = "", item = item
+    });
+
+    string result = new Services.Export.OmniCsvFormatter ().format (rows);
+    assert (result.contains ("\"true\""));
+}
+
+void test_omni_csv_not_flagged_p4 () {
+    var item = new Objects.Item ();
+    item.content = "Normal";
+    item.checked = false;
+    item.priority = Constants.PRIORITY_4;
+    item.description = "";
+
+    var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
+    rows.add (Services.Export.ExportRow () {
+        project_name = "Work", section_name = "", item = item
+    });
+
+    string result = new Services.Export.OmniCsvFormatter ().format (rows);
+    // flagged column is "false"
+    assert (!result.contains ("\"true\",\"false\"") == false || result.contains ("\"false\""));
+}
+
 void test_opml_envelope () {
     var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
     string result = new Services.Export.OmniOpmlFormatter ().format (rows);
@@ -131,5 +170,8 @@ int main (string[] args) {
     Test.add_func ("/export/opml/envelope",          test_opml_envelope);
     Test.add_func ("/export/opml/task-outline",      test_opml_task_outline);
     Test.add_func ("/export/opml/escape-ampersand",  test_opml_escapes_ampersand);
+    Test.add_func ("/export/omni-csv/header",      test_omni_csv_header);
+    Test.add_func ("/export/omni-csv/flagged-p1",  test_omni_csv_flagged_p1);
+    Test.add_func ("/export/omni-csv/not-flagged", test_omni_csv_not_flagged_p4);
     return Test.run ();
 }
