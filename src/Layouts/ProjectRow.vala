@@ -712,6 +712,7 @@ public class Layouts.ProjectRow : Gtk.ListBoxRow {
         var share_markdown_item = new Widgets.ContextMenu.MenuItem (_("Share"), "share-alt-symbolic");
         var share_email_item = new Widgets.ContextMenu.MenuItem (_("Send by E-Mail"), "mail-symbolic");
         var export_pdf_item = new Widgets.ContextMenu.MenuItem (_("Export as PDF"), "paper-symbolic");
+        var export_item = new Widgets.ContextMenu.MenuItem (_("Export project…"), "document-save-symbolic");
 
         var menu_box = new Gtk.Box (Gtk.Orientation.VERTICAL, 0);
         menu_box.margin_top = menu_box.margin_bottom = 3;
@@ -732,6 +733,7 @@ public class Layouts.ProjectRow : Gtk.ListBoxRow {
         menu_box.append (share_markdown_item);
         menu_box.append (share_email_item);
         menu_box.append (export_pdf_item);
+        menu_box.append (export_item);
 
         if (!project.is_deck && !project.inbox_project) {
             menu_box.append (new Widgets.ContextMenu.MenuSeparator ());
@@ -796,6 +798,12 @@ public class Layouts.ProjectRow : Gtk.ListBoxRow {
                     }
                 }
             });
+        });
+
+        export_item.clicked.connect (() => {
+            menu_popover.popdown ();
+            var dialog = new Dialogs.ExportDialog (project);
+            dialog.present (Planify._instance.main_window);
         });
 
         duplicate_item.clicked.connect (() => {
