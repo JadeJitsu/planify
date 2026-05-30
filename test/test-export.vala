@@ -105,8 +105,8 @@ void test_omni_csv_not_flagged_p4 () {
     });
 
     string result = new Services.Export.OmniCsvFormatter ().format (rows);
-    // flagged column is "false"
-    assert (!result.contains ("\"true\",\"false\"") == false || result.contains ("\"false\""));
+    // Flagged column must be "false" for a P4 (none) item
+    assert (!result.contains ("\"true\""));
 }
 
 void test_opml_envelope () {
