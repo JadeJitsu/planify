@@ -67,7 +67,9 @@ public class Services.Export.OmniOpmlFormatter : GLib.Object {
         sb.append ("\"");
 
         if (item.due.date != "") {
-            sb.append (" due=\""); sb.append (item.due.date); sb.append ("\"");
+            sb.append (" due=\"");
+            sb.append (Services.Export.CsvFormatter.escape_xml (item.due.date));
+            sb.append ("\"");
         }
         string plabel = Services.Export.CsvFormatter.priority_to_label (item.priority);
         if (plabel != "") {

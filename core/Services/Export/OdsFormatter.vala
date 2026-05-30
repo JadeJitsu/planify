@@ -9,8 +9,8 @@ public class Services.Export.OdsFormatter : GLib.Object {
         return build_content_xml (rows);
     }
 
-    public bool format_to_file (Gee.ArrayList<Services.Export.ExportRow?> rows,
-                                 string output_path)
+    public async bool format_to_file (Gee.ArrayList<Services.Export.ExportRow?> rows,
+                                       string output_path)
     {
         string content_xml  = build_content_xml (rows);
         string manifest_xml = build_manifest_xml ();
@@ -35,7 +35,7 @@ public class Services.Export.OdsFormatter : GLib.Object {
                 GLib.SubprocessFlags.STDOUT_PIPE | GLib.SubprocessFlags.STDERR_PIPE);
             string? stdout_out = null;
             string? stderr_out = null;
-            proc.communicate_utf8 (null, null, out stdout_out, out stderr_out);
+            yield proc.communicate_utf8_async (null, null, out stdout_out, out stderr_out);
             bool ok = proc.get_successful ();
             if (!ok) {
                 Services.LogService.get_default ().error (

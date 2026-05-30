@@ -199,10 +199,13 @@ public class Services.ExportService : GLib.Object {
     private async bool export_ods_async (GLib.File file,
                                           Gee.ArrayList<Services.Export.ExportRow?> rows)
     {
-        bool result = new Services.Export.OdsFormatter ().format_to_file (rows, file.get_path ());
-        Idle.add (export_ods_async.callback);
-        yield;
-        return result;
+        string? path = file.get_path ();
+        if (path == null) {
+            Services.LogService.get_default ().error ("ExportService",
+                "ODS export requires a local file path — non-local file URIs are not supported");
+            return false;
+        }
+        return yield new Services.Export.OdsFormatter ().format_to_file (rows, path);
     }
 
     private double draw_items (Cairo.Context cr, Cairo.PdfSurface surface, Gee.ArrayList<Objects.Item> items, double start_y, double x) {
