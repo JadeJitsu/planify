@@ -117,6 +117,94 @@ public class Services.ExportService : GLib.Object {
         surface.finish ();
     }
 
+    private Gee.ArrayList<Services.Export.ExportRow?> collect_rows (
+        Gee.ArrayList<Objects.Project> projects, bool include_completed)
+    {
+        var rows = new Gee.ArrayList<Services.Export.ExportRow?> ();
+
+        foreach (var project in projects) {
+            // Tasks with no section
+            foreach (var item in project.items) {
+                if (!include_completed && item.checked) continue;
+                rows.add (Services.Export.ExportRow () {
+                    project_name = project.name,
+                    section_name = "",
+                    item = item
+                });
+            }
+            // Tasks in sections, sorted by section_order
+            var sorted_sections = new Gee.ArrayList<Objects.Section> ();
+            sorted_sections.add_all (project.sections);
+            sorted_sections.sort ((a, b) => a.section_order - b.section_order);
+
+            foreach (var section in sorted_sections) {
+                foreach (var item in section.items) {
+                    if (!include_completed && item.checked) continue;
+                    rows.add (Services.Export.ExportRow () {
+                        project_name = project.name,
+                        section_name = section.name,
+                        item = item
+                    });
+                }
+            }
+        }
+
+        return rows;
+    }
+
+    public async bool export_to_file_async (
+        GLib.File file,
+        Gee.ArrayList<Objects.Project> projects,
+        bool include_completed,
+        Services.Export.ExportFormat format)
+    {
+        var rows = collect_rows (projects, include_completed);
+        string? text = null;
+
+        switch (format) {
+            case Services.Export.ExportFormat.CSV:
+                text = new Services.Export.CsvFormatter ().format (rows);
+                break;
+            case Services.Export.ExportFormat.MARKDOWN:
+                text = new Services.Export.MarkdownFormatter ().format (rows);
+                break;
+            case Services.Export.ExportFormat.OMNI_TASKPAPER:
+                text = new Services.Export.OmniTaskPaperFormatter ().format (rows);
+                break;
+            case Services.Export.ExportFormat.OMNI_OPML:
+                text = new Services.Export.OmniOpmlFormatter ().format (rows);
+                break;
+            case Services.Export.ExportFormat.OMNI_CSV:
+                text = new Services.Export.OmniCsvFormatter ().format (rows);
+                break;
+            case Services.Export.ExportFormat.ODS:
+                return yield export_ods_async (file, rows);
+            default:
+                return false;
+        }
+
+        if (text == null) return false;
+
+        try {
+            file.replace_contents (
+                text.data, null, false,
+                GLib.FileCreateFlags.REPLACE_DESTINATION, null, null);
+            return true;
+        } catch (Error e) {
+            Services.LogService.get_default ().error ("ExportService", e.message);
+            return false;
+        }
+    }
+
+    private async bool export_ods_async (GLib.File file,
+                                          Gee.ArrayList<Services.Export.ExportRow?> rows)
+    {
+        bool result = new Services.Export.OdsFormatter ().format_to_file (rows, file.get_path ());
+        Idle.add (export_ods_async.callback);
+        yield;
+        return result;
+    }
+
     private double draw_items (Cairo.Context cr, Cairo.PdfSurface surface, Gee.ArrayList<Objects.Item> items, double start_y, double x) {
         double y = start_y;
 
