@@ -79,7 +79,7 @@ public class Services.Export.CsvFormatter : GLib.Object {
         return sb.str;
     }
 
-    internal static string priority_to_label (int priority) {
+    public static string priority_to_label (int priority) {
         if (priority == Constants.PRIORITY_1) return "P1";
         if (priority == Constants.PRIORITY_2) return "P2";
         if (priority == Constants.PRIORITY_3) return "P3";
@@ -94,7 +94,7 @@ public class Services.Export.CsvFormatter : GLib.Object {
         return string.joinv (",", names.to_array ());
     }
 
-    internal static string quote (string s) {
+    public static string quote (string s) {
         return "\"" + s.replace ("\"", "\"\"") + "\"";
     }
 
